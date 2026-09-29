@@ -13,7 +13,7 @@
   body.flash{animation:flash .5s steps(2) 3}
   @keyframes flash{50%{background-color:var(--pink)}}
   .card{width:min(92%,420px);background:var(--paper);border:4px solid var(--ink);border-radius:22px;box-shadow:9px 9px 0 var(--ink);padding:28px 22px;text-align:center;position:relative;z-index:2}
-  .hidden{display:none}
+  .hidden{display:none !important}
   h1{margin:6px 0 4px;font-size:27px;font-weight:900;letter-spacing:-.5px}
   p{margin:8px 0;line-height:1.45}
   .sub{color:#5b6090}
@@ -68,6 +68,7 @@
   <div class="stamp">It's a prank HaHahah 😹😹</div>
   <p class="line" id="l1"></p>
   <p class="line soft" id="l2"></p>
+  <p class="line hidden" id="cd"></p>
   <a id="realDownload" class="btn hidden" href="https://www.mediafire.com/file/x0bei4ikiodr8zw/PR+G-1+PROPOSAL+.docx/file" target="_blank" rel="noopener noreferrer">📄 Download Real Research File</a>
 </div>
 
@@ -116,12 +117,25 @@ function revealPrank() {
   buzz([120,60,120,60,300]);
   emojiRain();
 
+  const REAL_LINK_DELAY = 15000; // real link shows 15s after the prank reveal
+  const end = Date.now() + REAL_LINK_DELAY;
+
   setTimeout(() => type($("l1"), "Joke! Mao bitaw ni ang link. Hehehe 😭😂", 45, () =>
     type($("l2"), "Pero naa gyud diri ang real research file. 👇", 35, () => {
-      const b = $("realDownload");
-      b.classList.remove("hidden");
-      b.classList.add("pop");
-      buzz(80);
+      const cd = $("cd");
+      cd.classList.remove("hidden");
+      const tick = () => {
+        const left = Math.ceil((end - Date.now()) / 1000);
+        if (left > 0) { cd.textContent = "⏳ Real link in " + left + "s..."; return; }
+        clearInterval(iv);
+        cd.classList.add("hidden");
+        const b = $("realDownload");
+        b.classList.remove("hidden");
+        b.classList.add("pop");
+        buzz(80);
+      };
+      const iv = setInterval(tick, 250);
+      tick();
     })), 700);
 }
 
